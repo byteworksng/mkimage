@@ -1,8 +1,8 @@
 SHELL         ?= /bin/sh
 ARGS           = $(filter-out $@,$(MAKECMDGOALS))
-PHP_VERSION   ?= 7.0
+PHP_VERSION   ?= 7.2
 BUILD_ID      ?= $(shell /bin/date "+%Y%m%d-%H%M%S")
-IMAGE_NAME     = klay/mkimage
+IMAGE_NAME     = byteworks/mkimage
 IMAGE_BASE_TAG = ubuntu-18.04
 
 .SILENT: ;               # no need for @

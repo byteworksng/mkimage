@@ -12,19 +12,17 @@ WORKDIR $BUILD_HOME
 RUN echo exit 101 > /usr/sbin/policy-rc.d \
 	&& chmod +x /usr/sbin/policy-rc.d \
 	&& echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
-    && apt-get update -y \
-	&& apt-get upgrade -y -q \
-	&& apt-get install -y -q --no-install-recommends \
-		software-properties-common \
-		python-software-properties \
+    && apt update -y \
+	&& apt upgrade -y -q \
+	&& apt install -y -q --no-install-recommends \
 		software-properties-common \
 		ca-certificates \
 		apt-transport-https \
 		apt-utils \
 	&& LANG=C.UTF-8 apt-add-repository -y ppa:ondrej/php \
-	&& apt-get update -y
+	&& apt update -y
 
-RUN apt-get install -y --no-install-recommends \
+RUN apt install -y --no-install-recommends \
 		php$PHP_VERSION-common \
 		php$PHP_VERSION-cli \
 		php$PHP_VERSION-xml \
@@ -108,7 +106,7 @@ RUN git clone --depth=1 -q https://github.com/colder/php-weakref $BUILD_HOME/php
 
 RUN tree -a $ARTIFACTS_PATH
 
-RUN SUDO_FORCE_REMOVE=yes apt-get remove -y \
+RUN SUDO_FORCE_REMOVE=yes apt remove -y \
 		php$PHP_VERSION-common \
 		php$PHP_VERSION-cli \
 		php$PHP_VERSION-xml \
@@ -125,9 +123,9 @@ RUN SUDO_FORCE_REMOVE=yes apt-get remove -y \
 		tree \
 		check \
 		libssl-dev \
-	&& apt-get autoremove -y \
-	&& apt-get autoclean -y \
-	&& apt-get clean -y \
+	&& apt autoremove -y \
+	&& apt autoclean -y \
+	&& apt clean -y \
 	&& rm -rf \
 		/var/lib/apt/lists/* \
 		/tmp/* \
