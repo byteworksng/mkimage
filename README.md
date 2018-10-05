@@ -10,13 +10,13 @@ Avaliable PHP versions:
 
 ## Usage
 
-### Ubunti 16.04
+### Ubuntu 18.04
 
 #### Getting Artifacts
 
 ```bash
 # Use PHP_VERSION=7.0, PHP_VERSION=7.1 or PHP_VERSION=7.2
-docker create --name extract klay/mkimage:ubuntu-16.04-php-${PHP_VERSION}
+docker create --name extract byteworks/mkimage:ubuntu-18.04-php-${PHP_VERSION}
 docker cp extract:/artifacts ./artifacts
 docker rm -f extract
 ```
@@ -26,7 +26,7 @@ docker rm -f extract
 ```Dockerfile
 # ...
 
-ENV PHP_VERSION=7.0
+ENV PHP_VERSION=7.2
 
 COPY artifacts .
 
@@ -134,14 +134,14 @@ RUN cp -R /artifacts/etc/php/$PHP_VERSION/mods-available /etc/php/$PHP_VERSION/m
 ## Build your own build-image
 
 ```bash
-cd ubuntu-16.04
+cd ubuntu-18.04
 # Use PHP_VERSION=7.0, PHP_VERSION=7.1 or PHP_VERSION=7.2
-make build PHP_VERSION=7.0
+make build PHP_VERSION=7.2
 ```
 
 ## Verify build-image
 
 ```bash
 # Use PHP_VERSION=7.0, PHP_VERSION=7.1 or PHP_VERSION=7.2
-docker inspect klay/mkimage:ubuntu-16.04-php-${PHP_VERSION} | grep build_id
+docker inspect byteworks/mkimage:ubuntu-18.04-php-${PHP_VERSION} | grep build_id
 ```
