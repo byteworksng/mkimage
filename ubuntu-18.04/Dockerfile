@@ -50,16 +50,33 @@ RUN mkdir -p $ARTIFACTS_PATH/usr/lib/php/`php-config --phpapi` \
 # Zephir Parser
 RUN git clone --depth=1 -q https://github.com/phalcon/php-zephir-parser.git -b master $BUILD_HOME/php-zephir-parser \
 	&& cd $BUILD_HOME/php-zephir-parser \
-	&& ./install --phpize /usr/bin/phpize$PHP_VERSION --php-config /usr/bin/php-config$PHP_VERSION \
-	&& cp `php-config --extension-dir`/zephir_parser.so $ARTIFACTS_PATH/usr/lib/php/`php-config --phpapi`/zephir_parser.so \
-	&& cp $BUILD_HOME/php-zephir-parser/tests/ci/zephir_parser.ini $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/zephir_parser.ini
+	&& phpize \
+    && ./configure \
+    && make -j"$(getconf _NPROCESSORS_ONLN)" \
+    && make install \
+	&& cp $BUILD_HOME/php-zephir-parser/modules/zephir_parser.so $ARTIFACTS_PATH/usr/lib/php/`php-config --phpapi`/zephir_parser.so \
+	&& echo "[Zephir]" >> $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/zephir_parser.ini \
+    && echo "extension=zephir_parser.so" >> $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/zephir_parser.ini
+
+
+# PSR
+RUN git clone --depth=1 -q https://github.com/jbboehr/php-psr.git -b master $BUILD_HOME/php-psr \
+	&& cd $BUILD_HOME/php-psr \
+	&& phpize \
+    && ./configure \
+    && make -j"$(getconf _NPROCESSORS_ONLN)" \
+    && make install \
+	&& cp $BUILD_HOME/php-psr/modules/psr.so $ARTIFACTS_PATH/usr/lib/php/`php-config --phpapi`/psr.so \
+	&& echo "[Psr]" >> $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/psr.ini \
+    && echo "extension=psr.so" >> $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/psr.ini
+
 
 # Phalcon
-RUN git clone --depth=1 -q https://github.com/phalcon/cphalcon.git -b master $BUILD_HOME/cphalcon \
+RUN git clone --depth=1 -q https://github.com/phalcon/cphalcon.git -b 4.0.x $BUILD_HOME/cphalcon \
 	&& cd $BUILD_HOME/cphalcon/build \
 	&& ./install --phpize /usr/bin/phpize$PHP_VERSION --php-config /usr/bin/php-config$PHP_VERSION \
 	&& cp `php-config --extension-dir`/phalcon.so $ARTIFACTS_PATH/usr/lib/php/`php-config --phpapi`/phalcon.so \
-	&& cp $BUILD_HOME/cphalcon/tests/_ci/phalcon.ini $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/phalcon.ini
+	&& cp $BUILD_HOME/cphalcon/tests/_ci/phalcon.ini $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/50-phalcon.ini
 
 # Aerospike
 RUN git clone --depth=1 -q https://github.com/aerospike/aerospike-client-php -b master $BUILD_HOME/aerospike-client-php \
@@ -94,15 +111,15 @@ RUN git clone --depth=1 -q https://github.com/tony2001/pinba_extension.git $BUIL
 	&& cp $BUILD_HOME/pinba_extension/modules/pinba.so $ARTIFACTS_PATH/usr/lib/php/`php-config --phpapi`/pinba.so \
 	&& echo "extension=pinba.so" >> $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/pinba.ini
 
-# Weakref
-RUN git clone --depth=1 -q https://github.com/colder/php-weakref $BUILD_HOME/php-weakref \
-	&& cd $BUILD_HOME/php-weakref \
-	&& phpize \
-	&& ./configure \
-	&& make -j"$(getconf _NPROCESSORS_ONLN)" \
-	&& make install \
-	&& cp $BUILD_HOME/php-weakref/modules/weakref.so $ARTIFACTS_PATH/usr/lib/php/`php-config --phpapi`/weakref.so \
-	&& echo "extension=weakref.so" >> $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/weakref.ini
+# Weakref - not compatible with PHP7.3 yet. Diabled for now
+#RUN git clone --depth=1 -q https://github.com/colder/php-weakref -b master $BUILD_HOME/php-weakref \
+#	&& cd $BUILD_HOME/php-weakref \
+#	&& phpize \
+#	&& ./configure \
+#	&& make -j"$(getconf _NPROCESSORS_ONLN)" \
+#	&& make install \
+#	&& cp $BUILD_HOME/php-weakref/modules/weakref.so $ARTIFACTS_PATH/usr/lib/php/`php-config --phpapi`/weakref.so \
+#	&& echo "extension=weakref.so" >> $ARTIFACTS_PATH/etc/php/$PHP_VERSION/mods-available/weakref.ini
 
 RUN tree -a $ARTIFACTS_PATH
 
@@ -134,4 +151,4 @@ RUN SUDO_FORCE_REMOVE=yes apt remove -y \
 		/usr/lib/php \
 		$BUILD_HOME
 
-VOLUME [$ARTIFACTS_PATH]
+VOLUME ['$ARTIFACTS_PATH']

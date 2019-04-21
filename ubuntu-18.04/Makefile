@@ -1,6 +1,6 @@
 SHELL         ?= /bin/sh
 ARGS           = $(filter-out $@,$(MAKECMDGOALS))
-PHP_VERSION   ?= 7.2
+PHP_VERSION   ?= 7.3
 BUILD_ID      ?= $(shell /bin/date "+%Y%m%d-%H%M%S")
 IMAGE_NAME     = byteworks/mkimage
 IMAGE_BASE_TAG = ubuntu-18.04
@@ -36,7 +36,7 @@ docker-build:
 		--pull \
 		--build-arg PHP_VERSION=$(PHP_VERSION) \
 		. \
-		-f Dockerfile.build
+		-f Dockerfile
 
 .PHONY: release
 release: build push
